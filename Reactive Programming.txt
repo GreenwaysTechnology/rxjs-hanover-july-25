@@ -456,6 +456,138 @@ main()
 
 Task:
  const users = [{id:1,name:'x'},{id:2,name:'y']
+***********************************************************************************************************************************************************
+
+Use case: Emit Every user id  without error 
+
+import { Observable } from "rxjs";
 
 
-  
+function main() {
+
+    //create usersId stream
+    const userIdStream = new Observable(subscriber => {
+        //mock usersid
+        const userIds = [101, 102, 103, 104, 105]
+        let index = 0
+        const intervalId = setInterval(() => {
+            if (index >= userIds.length) {
+                //once all items are completed
+                subscriber.complete()
+                clearInterval(intervalId)
+                return;
+            }
+            const id = userIds[index++];
+            subscriber.next(`Fetched User ID : ${id}`)
+
+            // if (id === 103) {
+            //     subscriber.error(new Error(`User Id ${id} causes an error`))
+            //     clearInterval(intervalId)
+            // }
+
+        }, 1000); //emit every 1 second
+
+    })
+
+    //subscriber
+    userIdStream.subscribe({
+        //listeners
+        next: value => {
+            console.log(`Got ${value}`)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+***********************************************************************************************************************************************************
+
+How to run code inside browser using vite?
+
+vite is build tool which takes care of packing js code and make it runnable inside browser
+
+G:\hanover\rx-apps>npm i vite
+
+package.json
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite"
+  }
+
+Running
+npm run dev
+
+> rx-apps@1.0.0 dev
+> vite
+
+
+  VITE v7.0.4  ready in 168 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+**********************************************************************************************************************************************************
+
+Use case: Improved version of the above code
+
+1.Loading indicator ....Progress bar
+2.Random delay and simulated latency
+3.Random error injection with retry attempts
+
+import { Observable } from "rxjs";
+
+function getUserStream() {
+
+    return new Observable(subscriber => {
+        const userIds = [101, 102, 103, 104, 105]
+        let index = 0
+        const intervalId = setInterval(() => {
+            if (index >= userIds.length) {
+                //once all items are completed
+                subscriber.complete()
+                clearInterval(intervalId)
+                return;
+            }
+            const id = userIds[index++];
+            const latency = Math.floor(Math.random() * 1500) + 500 // 500 to 2000 ms
+            console.log(`Loading...Delay ${latency}ms`)
+            setTimeout(() => {
+                //simulate error - 20%
+                if (Math.random() < 0.2) {
+                    const err = new Error(`Oops Something went wrong for ${id}`)
+                    subscriber.error(err)
+                    clearInterval(intervalId)
+                } else {
+                    subscriber.next(`Fetched User ID : ${id}`)
+                }
+            }, latency)
+
+
+        }, 1000); //emit every 1 second
+    })
+
+}
+
+function main() {
+    getUserStream().subscribe({
+        //listeners
+        next: value => {
+            console.log(`Got ${value}`)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+
+main()
+******************************************************************************************************************************************************
+  											Operators
+****************************************************************************************************************************************************
