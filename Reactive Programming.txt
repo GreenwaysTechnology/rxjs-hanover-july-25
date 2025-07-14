@@ -1,0 +1,266 @@
+											 Reactive Programming
+
+       Reactive Programming is a programming paradigm, focused on asynchronous data streams and the propagation of change.
+
+programming paradigm:
+
+Every programming language based on programming paradigm (style/principle)
+
+General Programming paradigms:
+1.Object oriented
+2.Procedural Oriented
+3.Functional Style
+4.Reactive Programming
+
+JS is Object based, functional style programming language - Hybrid
+
+Object oriented vs Object based:
+........................................................
+Object oriented principles:
+..........................................
+1.Abstraction
+2.Encaspulation
+3.Typing
+4.Hierachy 
+5.Modularity
+*************************************************
+6.Concurrency
+7.Persistency
+
+If any programming language implements first 5 principles 100%, those languages are called Object oriented Programming language.
+if any language does not follow all five principles fully or five principles partially , those languages are called "Object Based" Programming language.
+
+Functional Programming Principles:
+..............................................................
+
+1.Pure functions
+2.Immuability
+3.First class and Higher Order functions
+4.Referential Transparency
+5.Function Composition
+6.Recursion over loops
+7.Lazy Evaluation
+8.Side Effects
+etc....
+
+if any programming languages follows all functional programming principles that language is called "Functional Programming language"
+if not , that language is called "Functional Style programming language"
+***********************************************************************************************************************************************************
+										Asynchronous Programming
+********************************************************************************************************************************************************
+
+How to run multiple task concurrently , having single threaded environment?
+
+Using single event loop thread, we can run multiple tasks.
+
+Advantages:
+1.Less Memory
+2.Less CPU power
+***********************************************************************************************************************************************************
+										 data streams
+*********************************************************************************************************************************************************
+
+Stream:
+    Flow of data
+   	
+***********************************************************************************************************************************************************
+										Reactive programming is collection of many ideas
+
+1.Design patterns
+  -observer pattern 
+2.Functional Programming principles
+  -pure functions 
+  -immutablity
+
+ Reactive Programming = { Observer Design pattern, fp principles}
+
+Push and Pull Programming:
+................................................
+observer pattern talks about how two programs communicate each other for transferring data.
+
+In PULL  programming, consumer asks the data every time to the Producer - Sync way of communication - eg : iterators  -for loop
+
+In PUSH Programming, producer sends the data to the consumer -Async way of communication - Reactive Programming
+
+In modern days, we coimbine both - Push + Pull => Reactive Streams
+
+Back Pressure:
+   When producers sends data very fast to the consumers where consumers unable to process all data - This creates data loss.
+  How to solve this data loss?
+        We have to enable back pressure feature
+
+Reactive Programming = {Observer Pattern (push) ,Iterator Pattern(pull),Functional programming principles }
+*********************************************************************************************************************************************************
+									How to design reactive system
+			   					    https://www.reactivemanifesto.org/
+************************************************************************************************************************************************************
+
+Is there any standards/ policies available to start reactive application
+
+we want systems that are Responsive, Resilient, Elastic and Message Driven. We call these Reactive Systems.
+Systems built as Reactive Systems are more flexible, loosely-coupled and scalable. This makes them easier to develop and amenable to change. 
+
+Responsive
+Resilient
+Message Driven
+Elastic
+
+https://www.reactivemanifesto.org/
+************************************************************************************************************************************************************
+								   Reactive systems Implementation
+***********************************************************************************************************************************************************
+
+Reactive programming's foundational concepts were primarily developed by a team at Microsoft, led by computer scientist Erik Meijer, around 2011. 
+They created the Reactive Extensions framework, later known as ReactiveX or Rx, for the .NET platform - First implementation
+This framework was then adapted and implemented in various languages, including RxJava -Netflix
+      - Java implementation
+           -Rxjava
+           -Project Reactor
+           -Akka Streams
+           -Red hat Mutiny 
+ JavaScript implementation was available after java
+    Rxjs
+ 
+Async programming and implementation in java script:
+1.callbacks
+2.Promises
+3.Promise with async ....await
+4.reactive programming - Rxjs
+************************************************************************************************************************************************************
+									Rxjs core concepts
+**********************************************************************************************************************************************************
+
+Applications of Reactive programming:
+
+1.Data Processing
+  
+ Data store - data sources - database
+   In databases we can process data using SQL-Report
+   In Application side, we can use language specific apis to process
+	Java script has many apis
+              array.filter, array.map ,array.find
+ In Microsoft , inside .net languages , a feature was introduced called "LinQ"
+
+LINQ (Language Integrated Query) in C# is a powerful feature that allows you to query and manipulate data from various sources using a consistent syntax, similar to SQL. It provides a unified way to work with data collections, databases, XML, and more, directly within your C# code. 
+
+// Data source: a list of integers
+List<int> numbers = new List<int> { 5, 4, 1, 3, 9, 8, 6, 7, 2, 0 };
+
+// Query syntax:
+// Select even numbers, order them, and take the first 3
+var evenNumbersQuery = from num in numbers
+                       where num % 2 == 0
+                       orderby num
+                       select num;
+
+Reactive Programming = {LINQ + Observer Design pattern + Iterator Design Pattern+ async + etc....}
+***********************************************************************************************************************************************************
+										  RX JS implementation concepts
+*********************************************************************************************************************************************************
+1.Observable
+    In General Observable represents Producer.
+    In Programming Observable is "Data Type"
+    Are lazy "Push"  Collection of multiple values
+   Observable is implemented in js as "Object"
+
+Push - Observable
+Pull  - Iterator -for.. for..each
+
+	             Producer                                                                                Consumer	
+
+Pull          Passive: produces data when requested                                 Active: decides when data is requested
+
+Push       Active : Produces data at is own pace                                     Passive: reacts to received data 
+
+2.Observer
+    In General Observer represents "Consumers/Listeners"
+    In Programming Observer is "Data Type"
+    Observer are just Objects with three callbacks
+    Observers are simply set of Callbacks 
+                - next
+                -error
+                -complete
+
+3.Subscription
+	In Rx, a subscription is the bridge between a data source (Observable/Publisher) and a consumer(Observer or Subscriber)
+        Its what kicks off the data flow and manages how data is delivered
+       It is also object
+     Roles of subscription
+	   1.Establish a connection
+	   2.Controls data flow
+            3.Manages life cycles - active or completed or errored, you can unsubscribe to stop receiving messages
+           4.Handles clean up - teardown logic- like clearing intervals or releasing memory
+
+4.Operators
+        Are just apis.
+        It is building block of rx
+        Helps to create,process data and streams
+        we have a category of operators available
+
+5.Schedulers
+	 A scheduler controls when a subscription starts and when notifications are delivered.
+   
+6.Subjects 
+	 It is special type of Observable that allows values to be Multicasted to many observers - One to Many - broadcasting
+**********************************************************************************************************************************************************
+											Project setup
+***********************************************************************************************************************************************************
+
+G:\hanover>mkdir rx-apps
+
+G:\hanover>cd rx-apps
+G:\hanover\rx-apps>npm init --yes
+Wrote to G:\hanover\rx-apps\package.json:
+
+{
+  "name": "rx-apps",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
+
+G:\hanover\rx-apps>mkdir src
+
+G:\hanover\rx-apps>npm install rxjs
+
+How to test the code?
+
+Using node.js
+G:\hanover\rx-apps>node src/app.js
+Hello rxjs
+
+Using browser
+
+rx-apps>index.html
+
+index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rxjs</title>
+</head>
+<body>
+    <div>
+        <h1>Rxjs App</h1>
+        <script src="src/app.js"></script>
+    </div>
+</body>
+</html>
+
+in order to run, we need web server - live server
+**********************************************************************************************************************************************************
+
+
+
+
+
+  
