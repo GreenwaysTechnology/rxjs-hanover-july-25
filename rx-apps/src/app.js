@@ -3,18 +3,32 @@ import { Observable } from "rxjs";
 
 function main() {
 
-    //Producer
-    const observable = new Observable(subscriber => {
-        //emit event - data
-        subscriber.next('Hello')
-        subscriber.next('Rxjs')
-        subscriber.error(new Error('Something went wrong!'))
-        //emit complete event
-        subscriber.next('Hello Again')
+    //create usersId stream
+    const userIdStream = new Observable(subscriber => {
+        //mock usersid
+        const userIds = [101, 102, 103, 104, 105]
+        let index = 0
+        const intervalId = setInterval(() => {
+            if (index >= userIdStream.length) {
+                //once all items are completed
+                subscriber.complete()
+                clearInterval(intervalId)
+                return;
+            }
+            const id = userIds[index++];
+            subscriber.next(`Fetched User ID : ${id}`)
+
+            if (id === 103) {
+                subscriber.error(new Error(`User Id ${id} causes an error`))
+                clearInterval(intervalId)
+            }
+
+        }, 1000); //emit every 1 second
 
     })
+
     //subscriber
-    observable.subscribe({
+    userIdStream.subscribe({
         //listeners
         next: value => {
             console.log(`Got ${value}`)
