@@ -8,8 +8,9 @@ function main() {
         //emit event - data
         subscriber.next('Hello')
         subscriber.next('Rxjs')
-        subscriber.error(new Error('Something went wrong!'))
+        // subscriber.error(new Error('Something went wrong!'))
         //emit complete event
+        subscriber.complete()
         subscriber.next('Hello Again')
 
     })

@@ -10,8 +10,7 @@ function main() {
         subscriber.next('Rxjs')
         subscriber.error(new Error('Something went wrong!'))
         //emit complete event
-        subscriber.next('Hello Again')
-
+        subscriber.complete()
     })
     //subscriber
     observable.subscribe({

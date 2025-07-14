@@ -258,9 +258,149 @@ index.html
 
 in order to run, we need web server - live server
 **********************************************************************************************************************************************************
+											Getting started RXJS code
+***********************************************************************************************************************************************************
+
+Use Case: How to create Publisher and Subscriber , emit event.
+
+There are three types of events
+
+1.data event
+      Which is triggered , when ever the data is emitted.
+2.Error event
+     which is triggered, when ever the error is emitted
+3.Complete event
+    which is triggered, when ever there is no more data - End
+
+Publisher can be created using Observable Type or using operators (apis)
+
+import { Observable } from "rxjs";
 
 
+function main() {
+
+    //Producer
+    const observable = new Observable(subscriber => {
+        //emit event - data
+        subscriber.next('Hello')
+        subscriber.next('Rxjs')
+        //emit complete event
+        subscriber.complete()
+    })
+    //subscriber
+    observable.subscribe({
+        //listeners
+        next: value => {
+            console.log(`Got ${value}`)
+        },
+        error: err => {
+            console.log(`Got Error ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+*********************************************************************************************************************************************************
+How to emit error?
+
+import { Observable } from "rxjs";
 
 
+function main() {
+
+    //Producer
+    const observable = new Observable(subscriber => {
+        //emit event - data
+        subscriber.next('Hello')
+        subscriber.next('Rxjs')
+        subscriber.error(new Error('Something went wrong!'))
+        //emit complete event
+        subscriber.complete()
+    })
+    //subscriber
+    observable.subscribe({
+        //listeners
+        next: value => {
+            console.log(`Got ${value}`)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+***********************************************************************************************************************************************************
+
+What if i emit data after error or complete?
+
+After Complete:
+import { Observable } from "rxjs";
+
+
+function main() {
+
+    //Producer
+    const observable = new Observable(subscriber => {
+        //emit event - data
+        subscriber.next('Hello')
+        subscriber.next('Rxjs')
+        // subscriber.error(new Error('Something went wrong!'))
+        //emit complete event
+        subscriber.complete()
+        subscriber.next('Hello Again')
+
+    })
+    //subscriber
+    observable.subscribe({
+        //listeners
+        next: value => {
+            console.log(`Got ${value}`)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+
+After Error:
+import { Observable } from "rxjs";
+
+
+function main() {
+
+    //Producer
+    const observable = new Observable(subscriber => {
+        //emit event - data
+        subscriber.next('Hello')
+        subscriber.next('Rxjs')
+        subscriber.error(new Error('Something went wrong!'))
+        //emit complete event
+        subscriber.next('Hello Again')
+
+    })
+    //subscriber
+    observable.subscribe({
+        //listeners
+        next: value => {
+            console.log(`Got ${value}`)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
 
   

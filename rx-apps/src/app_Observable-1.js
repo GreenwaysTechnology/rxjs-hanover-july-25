@@ -8,10 +8,8 @@ function main() {
         //emit event - data
         subscriber.next('Hello')
         subscriber.next('Rxjs')
-        subscriber.error(new Error('Something went wrong!'))
         //emit complete event
-        subscriber.next('Hello Again')
-
+        subscriber.complete()
     })
     //subscriber
     observable.subscribe({
@@ -20,7 +18,7 @@ function main() {
             console.log(`Got ${value}`)
         },
         error: err => {
-            console.log(`Got ${err}`)
+            console.log(`Got Error ${err}`)
         },
         complete: () => {
             console.log('Completed')
