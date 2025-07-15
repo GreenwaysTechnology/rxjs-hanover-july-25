@@ -1399,9 +1399,54 @@ function main() {
             console.log('Completed')
         }
     })
-
-
-
-
 }
 main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									2.Join Creation Operators
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+These are Observables creation operators that also have join functionality - Emitting values of multiple source observables 
+
+1.coimbineLatest
+2.concat
+3.forkJoin
+4.merge
+5.partition
+6.race
+7.zip
+
+1.coimbineLatest:
+...........................
+It is combination operator that emits the latest values from multiple observables whenever any of them emits, but only after all have emitted at least once.
+
+coimbineLastest([ob1,ob2,ob3,...])
+1.Emits an array of the latest values from each observable
+
+import { combineLatest, interval } from "rxjs"
+function main() {
+    const obs1 = interval(1000)
+    const obs2 = interval(500)
+    combineLatest([obs1, obs2]).subscribe(value => console.log(value))
+}
+main()
+ &&&&&&&&&&&&&&&&&&&&&&&&&&&
+Price calculator:
+
+import { combineLatest, of } from "rxjs"
+function main() {
+    const price = of(1000)
+    const qty = of(2)
+    combineLatest([price, qty]).subscribe(value => console.log(value[0] * value[1]))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+								concat
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+concat is combination  operator that "sequentially subscribes" to multiple observables and emits all their values in order - waiting for one to complete before moving to the next.
+
+concat(ob1,ob2,ob3)
+
+->It waits for each Observable to complete before subscribing to the next
+->Emits values in strict order
