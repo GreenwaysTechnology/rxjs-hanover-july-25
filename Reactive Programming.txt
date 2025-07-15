@@ -68,11 +68,12 @@ Stream:
 
 1.Design patterns
   -observer pattern 
+ -iterator pattern
 2.Functional Programming principles
   -pure functions 
-  -immutablity
+  -immutability
 
- Reactive Programming = { Observer Design pattern, fp principles}
+ Reactive Programming = { Observer Design pattern, Iterator,  fp principles}
 
 Push and Pull Programming:
 ................................................
@@ -82,11 +83,12 @@ In PULL  programming, consumer asks the data every time to the Producer - Sync w
 
 In PUSH Programming, producer sends the data to the consumer -Async way of communication - Reactive Programming
 
-In modern days, we coimbine both - Push + Pull => Reactive Streams
+In modern days, we combine both - Push + Pull => Reactive Streams
 
 Back Pressure:
    When producers sends data very fast to the consumers where consumers unable to process all data - This creates data loss.
-  How to solve this data loss?
+
+How to solve this data loss?
         We have to enable back pressure feature
 
 Reactive Programming = {Observer Pattern (push) ,Iterator Pattern(pull),Functional programming principles }
@@ -194,7 +196,7 @@ Push       Active : Produces data at is own pace                                
 4.Operators
         Are just apis.
         It is building block of rx
-        Helps to create,process data and streams
+        Helps to create ,process data and streams
         we have a category of operators available
 
 5.Schedulers
@@ -591,3 +593,103 @@ main()
 ******************************************************************************************************************************************************
   											Operators
 ****************************************************************************************************************************************************
+Operators are simply speaking which are functions /methods.
+
+Types of Operators :
+1.Creation Operators
+
+class MathUtility{ 
+
+   add(){
+	return 0
+   }
+   //factory method
+   getInstance(){
+	return new MathUtility()
+    }   
+
+}
+//constructor pattern
+let utility = new MathUtilty()
+utility.add()
+
+//factory pattern
+ let util = Math.getInstance()
+util.add()
+Math.getInstance().add()
+
+In Rxjs:
+Constructor Pattern
+new Observable(function(){})
+
+Factory Pattern : creational operator
+ of ,from, fromEvent etc...
+	
+2.Pipeable Operators
+   are kind of operators for data processing
+   Any Pipeable operator is function that takes an Observable as its input and returns another Observable.
+   It is pure function.
+      ->When ever , we call operator, which returns "Observable" Type
+
+Reactive Programming uses Functional Programming principles:
+1.Pure functions
+2.Immutability
+
+Pure Functions:
+    Pure functions are defined by two rules..
+Rule A:
+     if function receives input, the function returns the input without any mutation...
+//pure function Rule A:
+
+//pure function
+function sayHello(message) {
+    return message
+}
+console.log(sayHello('hello'))
+
+//pure or not : No : Impure function
+function doubleIt(value) {
+    //side effects
+    return value * 2
+}
+console.log(doubleIt(2))
+************************************************************************************************************************************************************
+Rule B:
+    if function receives input, what if i want to change(mutate),We can apply rule b.
+    if function receives input, and modify input , we should return new object every time, which is called immutability. 
+
+//impure function: 
+// function updateProfile(city, profile) {
+//     profile.city = city
+//     return profile
+// }
+//apply immutablity pattern: create new object every time
+function updateProfile(city, profile) {
+
+    // return {
+    //     id: profile.id,
+    //     name: profile.name,
+    //     city: city
+    // }
+    // return Object.assign({}, profile, { city: city })
+
+    return { ...profile, city: city }
+}
+
+function main() {
+    const profile = {
+        id: 1,
+        name: 'Subrammanian Murugan',
+        city: 'NewYork'
+    }
+    console.log('before update', profile)
+    const result = updateProfile('London', profile)
+    console.log('After update', result)
+    console.log(profile === result ? 'Same Object' : 'Different Object')
+}
+main()
+*********************************************************************************************************************************************
+								Creational Operators
+*********************************************************************************************************************************************
+
+

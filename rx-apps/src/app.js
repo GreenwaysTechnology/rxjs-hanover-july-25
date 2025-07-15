@@ -1,44 +1,30 @@
-import { Observable } from "rxjs";
+//impure function: 
+// function updateProfile(city, profile) {
+//     profile.city = city
+//     return profile
+// }
+//apply immutablity pattern: create new object every time
+function updateProfile(city, profile) {
 
+    // return {
+    //     id: profile.id,
+    //     name: profile.name,
+    //     city: city
+    // }
+    // return Object.assign({}, profile, { city: city })
+
+    return { ...profile, city: city }
+}
 
 function main() {
-
-    //create usersId stream
-    const userIdStream = new Observable(subscriber => {
-        //mock usersid
-        const userIds = [101, 102, 103, 104, 105]
-        let index = 0
-        const intervalId = setInterval(() => {
-            if (index >= userIdStream.length) {
-                //once all items are completed
-                subscriber.complete()
-                clearInterval(intervalId)
-                return;
-            }
-            const id = userIds[index++];
-            subscriber.next(`Fetched User ID : ${id}`)
-
-            if (id === 103) {
-                subscriber.error(new Error(`User Id ${id} causes an error`))
-                clearInterval(intervalId)
-            }
-
-        }, 1000); //emit every 1 second
-
-    })
-
-    //subscriber
-    userIdStream.subscribe({
-        //listeners
-        next: value => {
-            console.log(`Got ${value}`)
-        },
-        error: err => {
-            console.log(`Got ${err}`)
-        },
-        complete: () => {
-            console.log('Completed')
-        }
-    })
+    const profile = {
+        id: 1,
+        name: 'Subrammanian Murugan',
+        city: 'NewYork'
+    }
+    console.log('before update', profile)
+    const result = updateProfile('London', profile)
+    console.log('After update', result)
+    console.log(profile === result ? 'Same Object' : 'Different Object')
 }
 main()
