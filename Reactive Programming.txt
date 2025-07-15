@@ -860,13 +860,182 @@ main()
 								 How to Convert Promise into Observable
 ************************************************************************************************************************************************
 
+Promise with Success:
+import { from } from "rxjs"
+
+function getPromise() {
+    const promise = Promise.resolve('Hello')
+    return from(promise)
+}
+
+function main() {
+    getPromise().subscribe({
+        next: value => {
+            console.log('Got', value)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+}
+main()
+
+Promise with Error:
+import { from } from "rxjs"
+
+function getPromise() {
+    const promise = Promise.reject('something went wrong!!')
+    return from(promise)
+}
+
+function main() {
+    getPromise().subscribe({
+        next: value => {
+            console.log('Got', value)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+}
+main()
+......................................................................
+
+Promise with Success or Reject
+import { from } from "rxjs"
+
+function login(userName, password) {
+    if (userName === 'admin' && password === 'admin') {
+        return Promise.resolve('Login success')
+    } else {
+        return Promise.reject('Login Failed')
+    }
+}
+function getPromise() {
+    return from(login('admin', 'admin'))
+ // return from(login('xxx','yyyy'))
+}
+
+function main() {
+    getPromise().subscribe({
+        next: value => {
+            console.log('Got', value)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+}
+main()
+
+&&&&&&&&&&&&&&&&
+Promise Constructors:
+
+import { from } from "rxjs"
+
+function login(userName, password) {
+    return new Promise((resolve, reject) => {
+        if (userName === 'admin' && password === 'admin') {
+            resolve('login success')
+        } else {
+            reject('login failed')
+        }
+    })
+}
+function getPromise() {
+    // return from(login('admin', 'admin'))
+    return from(login('xxx','yyyy'))
+}
+
+function main() {
+    getPromise().subscribe({
+        next: value => {
+            console.log('Got', value)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+}
+main()
+***************************************************************************************************************************************
+Promise with Fetch 
+import { from } from "rxjs"
+
+function fetchPosts() {
+    return fetch('https://jsonplaceholder.typicode.com/posts').then(res => res.json())
+}
+function getPromise() {
+    return from(fetchPosts())
+}
+
+function main() {
+    getPromise().subscribe({
+        next: value => {
+            console.log('Got', value)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+}
+main()
+*********************************************************************************************************************************************
+										Promise vs Observable
+
+Feature                                                Promise                                            Observable
+1.Lazy vs Eager                           Eager(Executes immediately)                   Lazy(executes on subscribe)
+
+import { of } from "rxjs"
+
+function getPromise() {
+    return Promise.resolve('hello')
+}
+function getObsverable() {
+    return of(1, 2,)
+}
+function main() {
+    //eager
+    console.log(getPromise())
+    //lazy
+    console.log(getObsverable())
+}
+main()
+
+2.Multiple values                                   Only One value at time                        Supports sequence of values(Stream)
+							      (fire and forget)                                    (transfers data longer)
 
 
+3.Cancelable                                        Not Cancelable                                     can be cancelled using "unsubscribe"
 
 
+4.Operators                                         Basic chaining(then,catch)                    Rich set of operators for data processing
 
+5.Multicasting                                       No built in support                                 Possible with help of operators
 
+6.Error Handling                                .catch method only                                  Operators like CatchError and more
 
-
+7.Reactive                                          No                                                            Yes
+************************************************************************************************************************************************
 
 

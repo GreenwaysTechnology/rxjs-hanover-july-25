@@ -1,22 +1,15 @@
-import { from ,of} from "rxjs"
+import { of } from "rxjs"
 
-import TODOS from "./mock-data/todos"
-
-function streamArray() {
-    return from(TODOS)
+function getPromise() {
+    return Promise.resolve('hello')
 }
-
+function getObsverable() {
+    return of(1, 2,)
+}
 function main() {
-    streamArray().subscribe({
-        next: value => {
-            console.log('Got', value)
-        },
-        error: err => {
-            console.log(`Got ${err}`)
-        },
-        complete: () => {
-            console.log('Completed')
-        }
-    })
+    //eager
+    console.log(getPromise())
+    //lazy
+    console.log(getObsverable())
 }
 main()
