@@ -2,11 +2,11 @@ import { EMPTY, iif, of } from "rxjs";
 
 
 function main() {
-    const isLoggedIn = false
+    const showMessage = false
     iif(
-        () => { return isLoggedIn },
-        of('Welcome Back!'),
-        of('Please Login')
+        () => { return showMessage },
+        of('Showing Message'),
+        EMPTY
     ).subscribe({
         next: value => {
             console.log(value)

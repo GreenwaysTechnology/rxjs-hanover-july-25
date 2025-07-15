@@ -1,15 +1,13 @@
-import { EMPTY, iif, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
 
 
 function main() {
-    const isLoggedIn = false
-    iif(
-        () => { return isLoggedIn },
-        of('Welcome Back!'),
-        of('Please Login')
-    ).subscribe({
+    ajax({
+        url: 'https://jsonplaceholder.typicode.com/comments',
+        method: 'GET',  
+    }).subscribe({
         next: value => {
-            console.log(value)
+            console.log(value.response)
         },
         error: err => {
             console.log(`Got Err:  ${err}`)

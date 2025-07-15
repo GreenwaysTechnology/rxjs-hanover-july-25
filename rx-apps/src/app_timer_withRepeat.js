@@ -1,15 +1,10 @@
-import { EMPTY, iif, of } from "rxjs";
+import { timer } from "rxjs";
 
 
 function main() {
-    const isLoggedIn = false
-    iif(
-        () => { return isLoggedIn },
-        of('Welcome Back!'),
-        of('Please Login')
-    ).subscribe({
+    timer(3000,1000).subscribe({
         next: value => {
-            console.log(value)
+            console.log(`Fired ${value}`)
         },
         error: err => {
             console.log(`Got Err:  ${err}`)

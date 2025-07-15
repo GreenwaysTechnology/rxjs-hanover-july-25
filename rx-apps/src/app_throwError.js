@@ -1,15 +1,10 @@
-import { EMPTY, iif, of } from "rxjs";
+import { throwError } from "rxjs";
 
 
 function main() {
-    const isLoggedIn = false
-    iif(
-        () => { return isLoggedIn },
-        of('Welcome Back!'),
-        of('Please Login')
-    ).subscribe({
+    throwError(()=> new Error('Something went wrong')).subscribe({
         next: value => {
-            console.log(value)
+            console.log(`Value ${value}`)
         },
         error: err => {
             console.log(`Got Err:  ${err}`)
@@ -19,7 +14,7 @@ function main() {
         }
     })
 
-
+  
 
 
 }

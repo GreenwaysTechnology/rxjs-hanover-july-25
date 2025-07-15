@@ -1,15 +1,10 @@
-import { EMPTY, iif, of } from "rxjs";
+import { interval } from "rxjs";
 
 
 function main() {
-    const isLoggedIn = false
-    iif(
-        () => { return isLoggedIn },
-        of('Welcome Back!'),
-        of('Please Login')
-    ).subscribe({
+    const stream = interval(1000).subscribe({
         next: value => {
-            console.log(value)
+            console.log(`Value ${value}`)
         },
         error: err => {
             console.log(`Got Err:  ${err}`)
@@ -19,7 +14,10 @@ function main() {
         }
     })
 
-
+    setTimeout(() => {
+        console.log('going to stop')
+        stream.unsubscribe()
+    }, 10000)
 
 
 }

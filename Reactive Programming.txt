@@ -1213,3 +1213,195 @@ function main() {
 }
 main()
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									throwError
+
+It creates an observable that immediately  throws error. It is useful for simulating errors or propagating them inside operator chains.
+
+import { throwError } from "rxjs";
+
+
+function main() {
+    throwError(()=> new Error('Something went wrong')).subscribe({
+        next: value => {
+            console.log(`Value ${value}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+  }
+main()
+********************************************************************************************************************************************
+									empty()
+
+Creates an Observable that emits no items and immediately completes.
+
+import { empty } from "rxjs";
+
+
+function main() {
+    empty().subscribe({
+        next: value => {
+            console.log(`Value ${value}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+  
+
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									timer
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+That creates an Observable  which emits a single value after a delay or
+A stream of values starting after a delay and then a regular intervals.
+
+timer(dueTime,period)
+
+import { timer } from "rxjs";
+
+
+function main() {
+    timer(3000).subscribe({
+        next: value => {
+            console.log(`Fired after 3 seconds ${value}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+
+
+
+}
+main()
+&&&&&&&&&&&&&&&
+
+Start after delay , then repeat:
+**********************************
+import { timer } from "rxjs";
+
+
+function main() {
+    timer(3000,1000).subscribe({
+        next: value => {
+            console.log(`Fired ${value}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+
+
+
+}
+main()
+
+									Difference between interval and timer
+
+Features                                    timer                               interval
+starts  after                              3 seconds                        immediately after 1st period
+Emits                                        once by default              infinite stream
+Use case                                  delay or timeout             repeated action
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										ajax
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+It is allows to perform HTTP requests(GET,POST ,etc) in a reactive way- similar to fetch , where fetch is promise based, which observable based.
+import { ajax } from "rxjs/ajax";
+
+
+function main() {
+    ajax({
+        url: 'https://jsonplaceholder.typicode.com/comments',
+        method: 'GET',  
+    }).subscribe({
+        next: value => {
+            console.log(value.response)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										iif
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+IIF IS A conditional creation function used to create an observable based on a runtime condition - similar to js if/else but reactive
+
+iif(condtion,trueResult:obs,falseResult:obs)
+
+import { EMPTY, iif, of } from "rxjs";
+
+
+function main() {
+    const showMessage = false
+    iif(
+        () => { return showMessage },
+        of('Showing Message'),
+        EMPTY
+    ).subscribe({
+        next: value => {
+            console.log(value)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+
+Toggle between observable:
+.............................................
+import { EMPTY, iif, of } from "rxjs";
+
+
+function main() {
+    const isLoggedIn = false
+    iif(
+        () => { return isLoggedIn },
+        of('Welcome Back!'),
+        of('Please Login')
+    ).subscribe({
+        next: value => {
+            console.log(value)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+
+
+
+}
+main()
