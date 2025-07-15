@@ -2,7 +2,7 @@ import { interval } from "rxjs";
 
 
 function main() {
-    const stream = interval(1000).subscribe({
+    interval(1000).subscribe({
         next: value => {
             console.log(`Value ${value}`)
         },
@@ -13,11 +13,6 @@ function main() {
             console.log('Completed')
         }
     })
-
-    setTimeout(() => {
-        console.log('going to stop')
-        stream.unsubscribe()
-    }, 10000)
 
 
 }

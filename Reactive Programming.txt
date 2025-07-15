@@ -1037,5 +1037,179 @@ main()
 
 7.Reactive                                          No                                                            Yes
 ************************************************************************************************************************************************
+										FromEvent
+**********************************************************************************************************************************************
+Converts any DOM events into Observable:
+......................................................................
+
+import { fromEvent } from "rxjs"
+
+function main() {
+    //attach document and convert dom events into observable
+    const clickStream = fromEvent(document, 'click')
+    //attach subscriber
+    clickStream.subscribe({
+        next: value => {
+            console.log(`X ${value.clientX} Y ${value.clientY}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+}
+main()
+
+What it does?
+1.Listens to a specific event on target(any DOM element,Node.js Event Emitter)
+2.Emits each event as it occurs
+
+Use case: Capture mouse move event:
+...............................................................
+import { fromEvent } from "rxjs"
+
+function main() {
+    //attach document and convert dom events into observable
+    const clickStream = fromEvent(document, 'mousemove')
+    //attach subscriber
+    clickStream.subscribe({
+        next: value => {
+            console.log(`X ${value.clientX} Y ${value.clientY}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+React to Keyboard Input Event:
+..................................................
+import { fromEvent } from "rxjs"
+
+function main() {
+    const input = document.getElementById('searchBox')
+    const inputStream = fromEvent(input, 'keyup')
+    inputStream.subscribe({
+        next: e => {
+           console.log(`Key Pressed ${e.key}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										range
+
+range is an creation operator that emits a sequence of values within specified range.
+
+import { range } from "rxjs"
 
 
+function main() {
+    range(1, 100).subscribe({
+        next: value => {
+            console.log(`${value}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+}
+main()
+
+Using range , we can simulate pagination:
+..................................................................
+import { range } from "rxjs"
+
+
+function main() {
+    const pageSize = 10
+    const totalItems = 1000
+    range(0, totalItems / pageSize).subscribe({
+        next: pageNumber => {
+            console.log(`Loading page ${pageNumber + 1}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+}
+main()
+************************************************************************************************************************************************										Streams Types
+
+1. Finite Stream
+    There is logical end, that means, completed event will be emitted
+2. Infinite Stream
+	There is no logical end, that means, completed event will not be emitted
+   interval - operator
+      takes an timer as input, and emits value from 0...............until you cancel
+
+import { interval } from "rxjs";
+
+
+function main() {
+    interval(1000).subscribe({
+        next: value => {
+            console.log(`Value ${value}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+
+}
+main()
+**********************************************************************************************************************************************
+How to stop interval?
+import { interval } from "rxjs";
+
+
+function main() {
+    const stream = interval(1000).subscribe({
+        next: value => {
+            console.log(`Value ${value}`)
+        },
+        error: err => {
+            console.log(`Got Err:  ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+
+    setTimeout(() => {
+        console.log('going to stop')
+        stream.unsubscribe()
+    }, 10000)
+
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
