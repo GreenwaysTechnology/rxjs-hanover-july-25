@@ -1,15 +1,11 @@
-import { from ,of} from "rxjs"
-
-import TODOS from "./mock-data/todos"
-
-function streamArray() {
-    return from(TODOS)
-}
+import { of } from "rxjs"
 
 function main() {
-    streamArray().subscribe({
+    const stream = of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    stream.subscribe({
+        //listeners
         next: value => {
-            console.log('Got', value)
+            console.log(`Got ${value}`)
         },
         error: err => {
             console.log(`Got ${err}`)

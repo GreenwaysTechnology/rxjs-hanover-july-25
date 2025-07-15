@@ -1,9 +1,8 @@
 import { from ,of} from "rxjs"
 
-import TODOS from "./mock-data/todos"
-
 function streamArray() {
-    return from(TODOS)
+    const numList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    return from(numList)
 }
 
 function main() {

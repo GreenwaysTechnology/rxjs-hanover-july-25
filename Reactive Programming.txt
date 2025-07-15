@@ -691,5 +691,182 @@ main()
 *********************************************************************************************************************************************
 								Creational Operators
 *********************************************************************************************************************************************
+There are two types of Creational Operator
+
+1.Creation Operators
+2.Join Creation Operators
+
+To Create an Observable from Various data sources .
+
+1.Creation Operators:
+1.1.create
+1.2.of
+1.3.from
+1.4.fromEvent
+1.5.interval
+1.6.range
+1.7.timer
+1.8.generate 
+1.9.empty
+1.10.defer
+1.11.ajax
+
+1.1.create - creates an Observable from scratch .
+import { Observable } from "rxjs"
+
+function main() {
+    const stream = Observable.create(observer => {
+        observer.next(1)
+        observer.next(2)
+        observer.complete()
+    })
+    stream.subscribe({
+        //listeners
+        next: value => {
+            console.log(`Got ${value}`)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+1.2.of
+   That allows you to create an Observable from a set of values.
+   Values could be any thing like numbers, strings, objects
+
+import { of } from "rxjs"
+
+function main() {
+    const stream = of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    stream.subscribe({
+        //listeners
+        next: value => {
+            console.log(`Got ${value}`)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+..............
+
+Emitting Strings:
+import { of } from "rxjs"
+
+function streamFruits() {
+    return of('apple', 'banana', 'organe', 'cherry')
+}
+
+function main() {
+    streamFruits().subscribe({
+        next: value => {
+            console.log(`Got ${value}`)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+
+Emit Objects:
+....................
+import { of } from "rxjs"
+
+function streamObjects() {
+    return of({ id: 1, name: 'Subramanian' }, { id: 2, name: 'Murugan' }, { id: 3, name: 'Erik' })
+}
+
+function main() {
+    streamObjects().subscribe({
+        next: value => {
+            console.log('Got',value)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+****************************************************************************************************************************************
+									   from
+				Creates an Observable from "array, promise ,Iterable, Or Observable like object"
+*******************************************************************************************************************************************
+
+Numeric Array:
+import { from ,of} from "rxjs"
+
+function streamArray() {
+    const numList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    return from(numList)
+}
+
+function main() {
+    streamArray().subscribe({
+        next: value => {
+            console.log('Got', value)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+
+Array of Objects:
+...........................
+import { from ,of} from "rxjs"
+
+import TODOS from "./mock-data/todos"
+
+function streamArray() {
+    return from(TODOS)
+}
+
+function main() {
+    streamArray().subscribe({
+        next: value => {
+            console.log('Got', value)
+        },
+        error: err => {
+            console.log(`Got ${err}`)
+        },
+        complete: () => {
+            console.log('Completed')
+        }
+    })
+}
+main()
+************************************************************************************************************************************************
+								 How to Convert Promise into Observable
+************************************************************************************************************************************************
+
+
+
+
+
+
+
+
+
 
 
