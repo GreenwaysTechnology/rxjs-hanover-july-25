@@ -1,0 +1,120 @@
+									   Data Processing - 1.Transformation Operators
+
+
+In Reactive programming , the data is streamed from one place(Observable)  into another Place called (Subscriber), while streaming, we can process the data using operators.
+
+In order to process data , we have many data processing Operators:
+
+1.Transformation Operators
+2.Filtering Operator 
+3.Join Operators
+4.Error Handling operators
+5.Mathematical operators
+6.Conditional and Boolean Operators
+7.Multicasting Operators
+8.Utility Operators
+
+1.Transformation Operators
+
+1.1.map
+1.2.mapTo
+1.3.scan
+1.4.window
+1.5.groupBy
+etc...
+
+Transform the emitted values from an observable into a new Format or structure.
+
+Data Processing
+
+Create Observable:
+   of().pipe(
+     data processing operator,dataoperators
+   ).subscribe(value=>console.log(value)
+********************************************************************************************************************************************************
+map:
+   Used to transform each value emited by an observable into new value using projection function
+
+obs.pipe(map,x,y).subscribe()
+
+import { map, of } from 'rxjs'
+function main() {
+    of(1, 2, 3, 4, 5)
+        .pipe(
+            map(x => x * 2)
+        )
+        .subscribe(val => console.log(val))
+}
+main()
+
+Transform Form Input Text into uppercase:
+......................................................................
+import { fromEvent, map, of } from 'rxjs'
+function main() {
+    fromEvent(document.getElementById('username'), 'input')
+        .pipe(
+            map(e => e.target.value.toUpperCase())
+        ).subscribe(value => console.log(value))
+}
+main()
+
+Calculate Values:
+.............................
+import { fromEvent, map, of } from 'rxjs'
+function main() {
+    const price = of(100)
+    price.pipe(
+        map(price => price * 1.18), //Add 18%
+        map(totalprice => totalprice * 5.0) //Add 5%
+    ).subscribe(v => console.log(v))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									mapTo
+
+Replace emissions with a Fixed value
+The mapTo operator in rx js similar to map- instead of transforming each value; it replaces every emitted value with a constant value
+
+->Takes a single Arg
+->Use when you dont care about the original value, only the fact that something happened like event or status
+
+import { mapTo, of } from "rxjs"
+function main() {
+    of(1, 2, 3).pipe(
+        mapTo('Clicked')
+    ).subscribe(val => console.log(val))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+						  buffer,bufferCount,bufferTime,bufferToggle
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Collect Emissions until notified
+
+The buffer operator in Rxjs collects values from the source observable until another observable emits and then it emits those buffered values as an array.
+
+import { buffer, from, fromEvent, interval, take } from "rxjs"
+
+function main() {
+    const clicks = fromEvent(document, 'click')
+    const intervals = interval(1000)
+    intervals.pipe(buffer(clicks)).subscribe(values => console.log('Buffered', values))
+}
+main()
+**********************************************************************************************************************************************
+
+Capture KeyPresses Until EnterKey:
+import { buffer, filter, from, fromEvent, interval, take } from "rxjs"
+
+function main() {
+    const keydowns = fromEvent(document, 'keydown')
+    const enterKey = keydowns.pipe(
+        filter(e => e.key === 'Enter')
+    )
+    enterKey.pipe(
+        buffer(enterKey)
+    ).subscribe(v => console.log(v))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									bufferCount
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
