@@ -1450,3 +1450,188 @@ concat(ob1,ob2,ob3)
 
 ->It waits for each Observable to complete before subscribing to the next
 ->Emits values in strict order
+
+import { concat, of } from "rxjs"
+function main() {
+    const first = of('A', 'B')
+    const second = of('C', 'D')
+    concat(first, second).subscribe(val => console.log(val))
+}
+main()
+
+Sequential api call
+import { concat, from, of } from "rxjs"
+function main() {
+    const api1 = from(fetch('https://jsonplaceholder.typicode.com/users/1').then(res => res.json()))
+    const api2 = from(fetch('https://jsonplaceholder.typicode.com/users/2').then(res => res.json()))
+    concat(api1, api2).subscribe(val => console.log(val))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+											ZIP
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+Zip is a combination operator that "combines multiple observables by waiting for all of them to emit one value " and then emitting those values a an array
+
+zip(ob1,ob2,ob3)
+
+1.Emits only when each observable has emitted
+2.Pairs values by index; first  from each , then second from each etc...
+3.Completes when the shortest observables completes.
+
+Use Case: Both Observable has eq values
+import { of, zip } from "rxjs"
+
+function main() {
+    const numbers = of(1, 2, 3, 4, 5)
+    const characters = of('A', 'B', 'C', 'D', 'E')
+    zip(numbers, characters).subscribe(val => console.log(val))
+}
+main()
+
+Output:
+ [1, 'A']
+ [2, 'B']
+ [3, 'C']
+ [4, 'D']
+ [5, 'E']
+
+Task:
+  User Id, his roles
+ 100- admin
+ 101 -guest
+ 103 -visitor
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+ interval with zip
+...........................
+import { interval, zip } from "rxjs"
+
+function main() {
+    const numbers1 = interval(1000)
+    const numbers2 = interval(1000)
+    zip(numbers1, numbers2).subscribe(val => console.log(val))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Projection:
+.................
+ take each observable value, show it as single item , instead of array
+
+import { zip, of } from "rxjs"
+
+function main() {
+    const names = of('Subramanian', 'Erik', 'John', 'Ram', 'Geetha')
+    const ages = of(45, 19, 23, 35, 32)
+
+    zip(names, ages, (name, age) => { return `${name} is ${age} years old` })
+        .subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									race
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+race is another combination operator that listens to multiple observables, and "only emits values from the one that emits first"
+once the first observable emits, all others are unsubscribed 
+
+race(ob1,ob2,ob3)
+
+1.Winner: the Observable that emits first
+2.Others, unsubscribed immediately 
+3.Usefull for timeouts, fallbacks, and first-response wins
+
+import { of, race } from "rxjs"
+
+function main() {
+    const first = of('first')
+    const second = of('Second')
+    race(first,second).subscribe(val=>console.log(`Winner : ${val}`))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+User vs System cancel:
+
+import { fromEvent, of, race, timer } from "rxjs"
+
+function main() {
+
+    //keydown event binding
+    const userCancel = fromEvent(document, 'keydown')
+    const autoCancel = timer(5000) //system cancels
+    race(userCancel, autoCancel).subscribe(val => {
+        if (typeof val === 'number') {
+            console.log('Auto cancelled')
+        } else {
+            console.log('Cancelled by user')
+        }
+    })
+
+}
+main()
+
+Test:
+Just press Enter/Space key
+or
+Wait for 5ms 
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+											merge
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+		merge allows "Multiple observables to emit values concurrently into a single observable"
+
+merge(obs1,obs2,obs3)
+
+1.Emit all values from all input observables
+2.Emits as soon as any observable emits
+3.Does not wait for completion like concat
+4.Usefull for combining independent , parallel streams
+
+import { merge, of } from "rxjs"
+
+function main() {
+
+    const characters = of('A', 'B')
+    const numbers = of(1, 2, 3)
+    merge(characters,numbers).subscribe(val=>console.log(val))
+
+}
+main()
+
+Merge User Events:
+...................................
+
+import { from, fromEvent, merge, of } from "rxjs"
+
+function main() {
+
+    const clicks = fromEvent(document, 'click')
+    const keypress = fromEvent(document, 'keydown')
+    merge(clicks, keypress).subscribe(event => console.log(`User Action ${event.type}`))
+
+}
+main()
+
+Merge api calls:
+............................
+import { merge,from } from "rxjs"
+
+function main() {
+
+    const url1 = "https://jsonplaceholder.typicode.com/users/1"
+    const url2 = "https://jsonplaceholder.typicode.com/users/2"
+    const api1 = from(fetch(url1).then(res => res.json()))
+    const api2 = from(fetch(url2).then(res => res.json()))
+    merge(api1, api2).subscribe(user => console.log(`User Name ${user.name}`))
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+							   merge vs concat vs coimbineLatest
+
+Operator                        Emits Immediately                    Waits for All?                     Order Guaranteed?
+-----------------------------------------------------------------------------------------------------------------------------------
+merge                            Yes                                             No                                       No
+concat                            No(sequential)                         Yes                                       Yes
+coimbineLatest             No(after all emit once)               Yes                                     No(interleaved)
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
