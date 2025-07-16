@@ -299,5 +299,79 @@ function main() {
 }
 main()
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-									scan, switch, switchScan
+									scan
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+Scan operator is like reduce function in js.
+It applies an accumulator function to each value emitted by the source observable and emits the intermediate result after every update.
+
+What it does?
+->Maintains internal state
+->Applies an accumulator function to each emitted value
+->Emits the updated state after each calculation
+
+import { of, scan } from 'rxjs'
+
+function main() {
+    const numbers = of(1, 2, 3)
+    numbers.pipe(
+        scan((total, current) => total + current, 0)
+    ).subscribe(val => console.log(val))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									 switchMap
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+It is higher Order mapping operator that transforms each value from a  source observable into a new inner Observable- and switches to the latest one, unsubscribing from any previous inner observable
+
+What it does?
+->Maps each source value to an inner Observable
+->Cancels the previous inner observable when a new one arrives
+->Emits values only from the most recent inner Observable
+
+import { fromEvent, interval, switchMap } from 'rxjs'
+
+function main() {
+    const clicks = fromEvent(document, 'click')
+    clicks.pipe(
+        switchMap(() => interval(1000)) //starts new interval(obs) on each click
+    ).subscribe(val=>console.log(val))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										MergeMap (flatMap)
+								(subscribes to all inner Observables)
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+Maps each source value to an Observable
+subscribes to all inner observable concurrently
+emits values from all active inner streams as they arrive
+
+import { fromEvent, interval, mergeMap } from 'rxjs'
+
+function main() {
+    const clicks = fromEvent(document, 'click')
+    clicks.pipe(
+        mergeMap(() => interval(1000))
+    ).subscribe(val => console.log(val))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										concatMap
+								 (Queues inner Observables sequentially)
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+maps each source value to an observable
+subscribes to the first inner observable
+waits for it to complete before subscribing to the next
+emits values from each inner observable in sequence
+
+import { concatMap, fromEvent, interval, take } from 'rxjs'
+
+function main() {
+    const clicks = fromEvent(document, 'click')
+    clicks.pipe(
+        concatMap(() => interval(1000).pipe(take(4))) // emits 0-3 every second
+    ).subscribe(val => console.log(val))
+}
+main()

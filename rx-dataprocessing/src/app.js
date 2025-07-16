@@ -1,12 +1,9 @@
-import { fromEvent, interval, mergeAll, windowToggle, windowWhen} from "rxjs"
+import { concatMap, fromEvent, interval, take } from 'rxjs'
 
 function main() {
-    const source = interval(1000)
-
-    const windowed = source.pipe(
-        windowWhen(()=>interval(5000)), //close the window every 5 secs
-        mergeAll()
-    )
-    windowed.subscribe(value => console.log(value))
+    const clicks = fromEvent(document, 'click')
+    clicks.pipe(
+        concatMap(() => interval(1000).pipe(take(4))) // emits 0-3 every second
+    ).subscribe(val => console.log(val))
 }
 main()
