@@ -1635,3 +1635,88 @@ merge                            Yes                                            
 concat                            No(sequential)                         Yes                                       Yes
 coimbineLatest             No(after all emit once)               Yes                                     No(interleaved)
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									forkJoin
+*****************************************************************************************************************************************************8
+Wait For All Observables to complete, Then emit once
+
+forkJoin([ob1,ob2,ob3])
+
+or
+forkJoin({
+key:obs1,
+key:obs2
+})
+
+1.Waits for all input observables to complete
+2.Emits once with last emitted value from each input
+3.if any observables errors,then the entire result errors out
+4.if any observable completes , forkJoin never emits
+
+import { forkJoin, of } from "rxjs"
+
+function main() {
+
+    const obs1 = of('A')
+    const obs2 = of('B')
+    forkJoin([obs1, obs2]).subscribe(([value1, value2]) => {
+        console.log(`Value1 ${value1} Value2 ${value2}`)
+    })
+
+}
+main()
+
+Multiple Parallel API Requests:
+.......................................................
+import { forkJoin, from, of } from "rxjs"
+
+function main() {
+
+    const url1 = `https://jsonplaceholder.typicode.com/users/1`
+    const url2 = `https://jsonplaceholder.typicode.com/posts?userId=1`
+    const users = from(fetch(url1).then(res => res.json()))
+    const posts = from(fetch(url2).then(res => res.json()))
+
+    forkJoin({ user: users, posts: posts }).subscribe(result => {
+        console.log('User :', result.user)
+        console.log('Posts :', result.posts)
+    })
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										partition
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Spilt a Stream based on a Condition.
+It is utility operator that Spilts one Observable into two based on predicate function. 
+   -The first Observable emits values that match the predicate 
+   -The second Observable emits values that do not match the predicate 
+
+eg:
+ const [pass,fail]  =partition(source,predicateFun);
+
+import { of, partition } from "rxjs"
+
+function main() {
+
+    const numbers = of(1, 2, 3, 4, 5, 6, 7)
+    const [evens, odds] = partition(numbers, n => n % 2 === 0)
+    evens.subscribe(value => console.log(`Even Numbers ${value}`))
+    odds.subscribe(value => console.log(`Odd Numbers ${value}`))
+
+}
+main()
+********************************************************************************************************************************************
+Separate Users based on role:
+....................................................
+import { of, partition } from "rxjs"
+
+function main() {
+
+    const users = of({ name: 'Subramanian', role: 'admin' }, { name: 'Ram', role: 'user' }, { name: 'Erik', role: 'user' })
+    const [admins, normals] = partition(users, user => user.role === 'admin')
+    admins.subscribe(value => console.log('Admins', value))
+    normals.subscribe(value => console.log('Regular', value))
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
