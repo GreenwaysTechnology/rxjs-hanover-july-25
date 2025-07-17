@@ -1,8 +1,9 @@
-import { of, single } from 'rxjs'
+import { fromEvent, takeUntil, timer, throwIfEmpty } from 'rxjs'
 
 function main() {
-    of(1, 2, 3, 3, 4, 5).pipe(
-        single(value => value === 3)
+    fromEvent(document, 'click').pipe(
+        takeUntil(timer(1000)),  //listen for 1 sec
+        throwIfEmpty(() => new Error('No Clicks within 1 sec')),
     ).subscribe({
         next: (va) => {
             console.log(va) //never be called

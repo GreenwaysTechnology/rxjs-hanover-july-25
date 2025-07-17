@@ -280,3 +280,229 @@ main()
 - **takeLast()**: Takes the last N values before completion
 - **takeUntil()**: Takes values until a notifier observable emits
 - **takeWhile()**: Takes values while a condition is true
+
+take:
+ It is counter based filtering operator that emits the first N values from the source Observable and then completes.
+import { from, take } from 'rxjs'
+
+function main() {
+    const source = from([1, 2, 3, 4, 5, 6, 7])
+    source.pipe(
+        take(3)
+    ).subscribe(value => console.log(value))
+}
+main()
+
+import { interval, take } from 'rxjs'
+
+function main() {
+    
+    interval(1000).pipe(
+        take(3)
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+											takesLast
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+Takes the last N values before completion
+import { from,  takeLast } from 'rxjs'
+
+function main() {
+    const source = from([1, 2, 3, 4, 5, 6, 7])
+    source.pipe(
+        takeLast(3)
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+											takeUntil()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+1.Subscribes to source observable
+2.Also Listens to a notifier Observable
+
+import { from,  interval, timer, takeUntil, } from 'rxjs'
+
+function main() {
+    const source = interval(1000)//emits once sec
+    const stop = timer(5000) //emits once after 5 seconds
+
+    source.pipe(
+        takeUntil(stop)
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										takeWhile()
+1. Takes values while a condition is true
+2.Accepts a predicate function that evaluates each emitted value
+3.Emits values only while the predicate returns true.
+
+import { of, takeWhile } from 'rxjs'
+
+function main() {
+    const source = of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+    source.pipe(
+        takeWhile(value => value <= 5)
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									4. Distinct Value Handling
+- **distinct()**: Only emits unique values (compared to previous emissions)
+- **distinctUntilChanged()**: Only emits when the current value is different from the last
+- **distinctUntilKeyChanged()**: Like distinctUntilChanged but for object properties
+
+distinct:
+ keeps track of previously emitted values.
+Emits a value only if it hasn't seen before
+
+import { distinct, of, takeWhile } from 'rxjs'
+
+function main() {
+    const source = of(1, 2, 3, 4, 2, 3, 6, 8, 9, 10, 10)
+
+    source.pipe(
+        distinct()
+    ).subscribe(value => console.log(value))
+}
+main()
+
+Duplicate Objects:
+.............................
+import { distinct, of, takeWhile } from 'rxjs'
+
+function main() {
+    const source = of(
+        { id: 1, name: 'a' },
+        { id: 1, name: 'b' },
+        { id: 2, name: 'c' },
+        { id: 3, name: 'd' },
+        { id: 2, name: 'e' }
+    )
+
+    source.pipe(
+        distinct(user => user.id)
+    ).subscribe(value => console.log(value))
+}
+main()
+*********************************************************************************************************************************************************
+								distinctUntilChanged()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Only emits when the current value is different from the last
+Compares each new value with the last emitted value
+Emits the value only if its different
+
+import { distinctUntilChanged, of } from 'rxjs'
+
+function main() {
+    const source = of(1, 2, 3, 4, 2, 3, 6, 8, 9, 10, 10)
+    source.pipe(
+        distinctUntilChanged()
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+							distinctUntilKeyChanged()
+
+ Like distinctUntilChanged but for object properties
+
+import { distinct, distinctUntilKeyChanged, of, takeWhile } from 'rxjs'
+
+function main() {
+    const source = of(
+        { id: 1, name: 'a' },
+        { id: 1, name: 'b' },
+        { id: 2, name: 'c' },
+        { id: 3, name: 'd' },
+        { id: 2, name: 'e' },
+        { id: 2, name: 'f' }
+
+    )
+
+    source.pipe(
+        distinctUntilKeyChanged(user => user.id)
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+												5. Error/Completion Handling
+
+- **ignoreElements()**: Ignores all values, only forwards error or completion
+- **throwIfEmpty()**: Throws an error if the source completes without emitting
+
+
+ignoreElements():
+...........................
+ignores every next value from the source
+Still passes along complete and error signals
+
+import { of, ignoreElements } from 'rxjs'
+
+function main() {
+    of('you', 'are', 'talking', 'to', 'me').pipe(
+        ignoreElements()
+    ).subscribe({
+        next: (va) => {
+            console.log(va) //never be called
+        },
+        error: (err) => {
+            console.log(err)
+        },
+        complete: () => {
+            console.log('done') // called when done
+        }
+    })
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										throwIfEmpty()
+
+Throws an error if the source completes without emitting
+ConditionalError handling operator that throws an error if the source completes without emitting any values
+import { fromEvent, takeUntil, timer, throwIfEmpty } from 'rxjs'
+
+function main() {
+    fromEvent(document, 'click').pipe(
+        takeUntil(timer(1000)),  //listen for 1 sec
+        throwIfEmpty(() => new Error('No Clicks within 1 sec')),
+    ).subscribe({
+        next: (va) => {
+            console.log(va) //never be called
+        },
+        error: (err) => {
+            console.log(err)
+        },
+        complete: () => {
+            console.log('done') // called when done
+        }
+    })
+}
+main()
+*********************************************************************************************************************************************************
+												 Conditional Filtering
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+ **single()**: Errors if the source emits more than one value matching a predicate
+
+import { of, single } from 'rxjs'
+
+function main() {
+    of(1, 2, 3, 3, 4, 5).pipe(
+        single(value => value === 3)
+    ).subscribe({
+        next: (va) => {
+            console.log(va) //never be called
+        },
+        error: (err) => {
+            console.log(err)
+        },
+        complete: () => {
+            console.log('done') // called when done
+        }
+    })
+}
+main()
