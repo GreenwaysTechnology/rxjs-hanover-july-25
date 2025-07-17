@@ -1,0 +1,282 @@
+										Filtering Operators
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&Filt Filtering operators filters data based on certain conditions	.
+
+Category of Filtering Operators:
+.....................................................
+
+1. Basic Filtering
+  - **filter()**: Emits values that pass a predicate function (like Array.prototype.filter)
+  - **first()**: Emits only the first value (or first that meets a condition)
+  - **last()**: Emits only the last value before completion
+  - **elementAt()**: Emits only the value at a specified index
+
+2. Time-Based Filtering
+- **throttle()** (deprecated in favor of throttleTime): Emits a value then ignores subsequent values for a duration
+- **throttleTime()**: Emits a value then ignores subsequent values for a duration
+- **debounce()** (deprecated in favor of debounceTime): Waits for a pause in emissions before emitting
+- **debounceTime()**: Waits for a pause of specified duration before emitting
+- **sample()**: Emits the most recent value at periodic intervals
+- **sampleTime()**: Emits the most recent value at periodic time intervals
+- **audit()**: Ignores for a duration then emits the last value (like throttle but emits at end)
+- **auditTime()**: Time-based version of audit
+
+3. Rate Limiting
+- **take()**: Takes the first N values then completes
+- **takeLast()**: Takes the last N values before completion
+- **takeUntil()**: Takes values until a notifier observable emits
+- **takeWhile()**: Takes values while a condition is true
+- **skip()**: Skips the first N values
+- **skipLast()**: Skips the last N values (requires knowing completion point)
+- **skipUntil()**: Skips values until a notifier observable emits
+- **skipWhile()**: Skips values while a condition is true
+
+4. Distinct Value Handling
+- **distinct()**: Only emits unique values (compared to previous emissions)
+- **distinctUntilChanged()**: Only emits when the current value is different from the last
+- **distinctUntilKeyChanged()**: Like distinctUntilChanged but for object properties
+
+5. Error/Completion Handling
+- **ignoreElements()**: Ignores all values, only forwards error or completion
+- **throwIfEmpty()**: Throws an error if the source completes without emitting
+
+ 6. Conditional Filtering
+- **single()**: Errors if the source emits more than one value matching a predicate
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+										1. Basic Filtering
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+filter():
+    Emits values that pass a predicate function (like Array.prototype.filter)
+
+What it does?
+ ->It evaluates each emitted value using a predicate function that returns true or false
+->if the predicate returns true, the value is emitted
+->if it returns false, the value is discarded
+
+import { filter, of } from 'rxjs'
+
+function main() {
+    const source = of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    source.pipe(
+        filter(value => value % 2 === 0)
+    ).subscribe(value => console.log('Even Numbers', value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&
+ 
+Use case: combine  filter ,map together
+
+import { filter, map, range } from 'rxjs'
+
+function main() {
+    range(1, 100).pipe(
+        filter(n => n % 2 === 0),
+        map(value => value * 2)
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									first and last
+
+first:
+ Emits  only the first value from an observable stream or first value that satisfies a  given condition
+
+import { filter, first, map, range } from 'rxjs'
+
+function main() {
+    range(1, 100).pipe(
+        first()
+    ).subscribe(value => console.log(value))
+}
+main()
+
+first with predicate:
+import { first, range } from 'rxjs'
+
+function main() {
+    range(1, 100).pipe(
+        first(value => value > 20)
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										last()
+
+It emits last /final value from an Observable stream
+
+import {  last, range } from 'rxjs'
+
+function main() {
+    range(1, 100).pipe(
+        last()
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										elementAt()
+Emits only the value at the given index (starting from 0)
+
+import { elementAt, range } from 'rxjs'
+
+function main() {
+    range(1, 100).pipe(
+        elementAt(3)
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									
+										Time-Based Filtering
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+throttleTime():
+  Emits a value then ignores subsequent values for a duration
+
+What it does?
+
+1.Emits the first value immediately
+2.The ignores subsequent values for a specified duration (in ms)
+3.After the duration, its ready to emit the next incoming value.
+import { interval, throttleTime } from 'rxjs'
+
+function main() {
+    interval(1000).pipe(
+        throttleTime(1000)
+    ).subscribe({
+        next: (value) => {
+            console.log(value)
+        },
+        error:(err)=>{
+            console.log(err)
+        },
+        complete:()=>{
+            console.log('done')
+        }
+    })
+}
+main()
+
+Limiting click Rate:
+..............................
+import { fromEvent, interval, throttleTime } from 'rxjs'
+
+function main() {
+    fromEvent(document, 'click').pipe(
+        throttleTime(1000)
+    ).subscribe({
+        next: (evt) => {
+            console.log(evt)
+        },
+        error: (err) => {
+            console.log(err)
+        },
+        complete: () => {
+            console.log('done')
+        }
+    })
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										debounceTime()
+
+Waits for a pause of specified duration before emitting
+
+What it does?
+1.waits for a pause in the for a given duration
+2.Emits only the most recent value after pause
+
+import { debounceTime, fromEvent,map } from 'rxjs'
+
+function main() {
+    const search = document.getElementById('search')
+    fromEvent(search, 'keyup').pipe(
+        map(evt => evt.target.value),
+        debounceTime(2000)
+    ).subscribe(value => console.log(value))
+}
+main()
+
+Use case:
+Avoid firing API Calls on every keystork
+validate form only after user stops typing
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									sample() 
+
+1.Emits the most recent value at periodic intervals
+
+What it does?
+
+1.Listens to a source observable and a sampler Observable
+2.Every time the sampler emits, it grabs the latest value from the source
+3.if the source hasn't emitted since the last sample, nothing is emitted
+
+import { interval, sample } from 'rxjs'
+
+function main() {
+    const source = interval(1000)
+    source.pipe(
+        sample(interval(2000))
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+								SampleTime
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+Sample: Emits the latest value when another observable emits
+SampleTime: Emits latest value at fixed time intervals
+
+import { interval, sampleTime } from 'rxjs'
+
+function main() {
+    const source = interval(1500)
+    source.pipe(
+        sampleTime(200) //emits the lastest value every 1000 ms
+    ).subscribe(value => console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&									audit()
+***********************************************************************************************************************************************************
+ Ignores for a duration then emits the last value (like throttle but emits at end)
+
+import { audit, fromEvent, interval } from 'rxjs'
+
+function main() {
+    const source = fromEvent(document, 'click').pipe(
+        audit(() => interval(1000)) //slience for 1 sec after each click
+    ).subscribe(event => console.log('Audited Click', event))
+}
+main()
+
+audit vs throttle
+throttle :
+  it emits first value in time window
+audit:
+  it emits last value after the time window
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										auditTime()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+When the source emits a value, auditTime starts a timer
+During that time, it ignores all other values
+Once the timer ends, it emits the latest value received during the slience
+Then it restarts and waits for the next value to restart the cycle.
+
+Emit latest click every second
+
+import { auditTime, fromEvent, interval } from 'rxjs'
+
+function main() {
+    const source = fromEvent(document, 'click').pipe(
+        auditTime(1000) //emit lastest click every 10000
+    ).subscribe(event => console.log('Audited Click', event))
+}
+main()
+*********************************************************************************************************************************************************
+												 Rate Limiting
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+- **take()**: Takes the first N values then completes
+- **takeLast()**: Takes the last N values before completion
+- **takeUntil()**: Takes values until a notifier observable emits
+- **takeWhile()**: Takes values while a condition is true
