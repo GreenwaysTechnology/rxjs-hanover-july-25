@@ -1,0 +1,122 @@
+										Error Handling
+
+		RxJS offers a powerful set of error handling operators that help you build resilient, fault-tolerant reactive pipelines. Here's a breakdown tailored to your systems-thinking approach,
+
+ Core Error Handling Operators
+
+| Operator 				 Purpose | 										Example Use Case | 
+
+| catchError 	| Catches errors and returns a fallback Observable						 |Replace failed HTTP call with default data | 
+| retr	y		 | Automatically retries the source Observable a set number of times		 | Retry flaky network requests | 
+| retryWhen 	| Retries based on custom logic (e.g. delay, condition) 					| Exponential backoff for API failures | 
+
+
+catchError:
+...................
+ 
+source.pipe(
+    catchError(err=>{
+	return of('fallbackValue')
+   }
+).subscribe()
+
+import { catchError, map, of } from 'rxjs'
+
+function main() {
+    of(1, 2, 3, 4, 5, 6).pipe(
+        map(n => {
+            if (n === 4) {
+                throw 'something went wrong'
+            }
+            return n
+        }),
+        catchError(() => {
+            return of('A', 'B', 'C') // fallback response
+        })
+    ).subscribe({
+        next: (val) => console.log('value', val),
+        error: (err) => console.log('error', err),
+        complete: () => console.log('complete')
+    })
+}
+main()
+
+API Calls and catchError:
+..........................................
+import { catchError, map, of } from 'rxjs'
+import { ajax } from 'rxjs/ajax'
+
+function main() {
+
+    // const APIURL = 'https://jsonplaceholder.typicode.com/posts'
+    const APIURL = 'https://jsonplaceholder.typicode.com/posxxxs'
+
+    ajax.getJSON(APIURL).pipe(
+        catchError(() => {
+            return of([{ id: 0, userId: 0, title: 'title', body: 'body' }])
+        })
+    ).subscribe({
+        next: (val) => {
+            val.forEach(post => {
+                console.log(post.id, post.userId, post.title, post.body)
+            })
+        },
+        error: (err) => console.log('error', err),
+        complete: () => console.log('complete')
+    })
+}
+main()
+**********************************************************************************************************************************************************
+											retry
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+Types of Error handling
+
+1.fail fast
+    error ---->handling error
+2.fail safe
+   error----retry----at last ----handle error
+
+import { catchError, interval, mergeMap, of, retry, throwError } from 'rxjs'
+
+function main() {
+    interval(1000).pipe(
+        mergeMap(val => val > 5 ? throwError(() => 'Error') : of(val)),
+        retry(2),
+        catchError(() => of('fallback'))
+    ).subscribe({
+        next: (val) => console.log('value', val),
+        error: (err) => console.log('error', err),
+        complete: () => console.log('complete')
+    })
+}
+main()
+*********************************************************************************************************************************************************
+							   retry With Delay
+
+
+1.intercept errors from the source observable
+2.Uses a notifier function to decide when and if to retry
+3.resubscribes to the source when the notifier emits a value
+
+import { delay, throwError, timer,retry } from 'rxjs'
+
+function main() {
+    throwError(() => new Error('Boom!'))
+        .pipe(
+            retry(errors =>
+                errors.pipe(delayWhen(() => timer(2000))) // retry after 2s
+            )
+        )
+        .subscribe({
+            next: val => console.log('Next:', val),
+            error: err => console.log('Final Error:', err.message),
+        });
+
+
+}
+main()
+
+
+
+
