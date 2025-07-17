@@ -1,9 +1,10 @@
-import { concatMap, fromEvent, interval, take } from 'rxjs'
+import { interval, pairwise } from 'rxjs'
 
 function main() {
-    const clicks = fromEvent(document, 'click')
-    clicks.pipe(
-        concatMap(() => interval(1000).pipe(take(4))) // emits 0-3 every second
-    ).subscribe(val => console.log(val))
+    interval(1000).pipe(
+        pairwise()
+    ).subscribe(([pre, curr]) => {
+        console.log(`Previous Value ${pre} Current Value ${curr}`)
+    })
 }
 main()

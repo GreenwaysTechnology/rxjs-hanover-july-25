@@ -33,7 +33,7 @@ Create Observable:
    ).subscribe(value=>console.log(value)
 ********************************************************************************************************************************************************
 map:
-   Used to transform each value emited by an observable into new value using projection function
+   Used to transform each value emitted by an observable into new value using projection function
 
 obs.pipe(map,x,y).subscribe()
 
@@ -73,6 +73,7 @@ main()
 									mapTo
 
 Replace emissions with a Fixed value
+
 The mapTo operator in rx js similar to map- instead of transforming each value; it replaces every emitted value with a constant value
 
 ->Takes a single Arg
@@ -98,7 +99,6 @@ buffer operator is a powerful tool for batching emitted values from a source obs
 - It collects values from the source observable into an array.
 - When the notifier observable emits, it flushes the array downstream.
 - Then it starts buffering again until the next notifier emission
-
 
 
 import { buffer, from, fromEvent, interval, take } from "rxjs"
@@ -145,7 +145,7 @@ main()
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 It groups elements based on buffer size
-collects values until the buffersize is reached
+collects values until the buffer size is reached
 emits the buffered array downstream
 
 Use case:
@@ -167,7 +167,7 @@ main()
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 What it does?
-1.Bufferes values for a specified duration
+1Bufferes values for a specified duration
 2.Emits the buffered array after each time span
 import { buffer, bufferCount, bufferTime, from, fromEvent, interval, take } from "rxjs"
 
@@ -208,6 +208,7 @@ main()
 ->starts collecting values from the source observable
 ->calls the closing selector function, which returns observable 
 ->when that observable emits, the buffer is flushed and new one starts
+
 import { bufferWhen, interval } from "rxjs"
 
 function main() {
@@ -375,3 +376,104 @@ function main() {
     ).subscribe(val => console.log(val))
 }
 main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										groupBy
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+It splits "a source observables" into multiple grouped observables, each keyed by a value you represent.
+It is like turning a stream into "a stream of categorized sub streams"
+
+What it does?
+
+1.Uses a keySelector function to determine the group by for each item
+2.Emits groupedObservable for each unique key.
+3.Each GroupedObservable emits items that the share same key.
+
+import { from, groupBy, mergeMap, toArray } from 'rxjs'
+function main() {
+    //data set
+    const people = [
+        { name: 'Subramanian', age: 45 },
+        { name: 'Geetha', age: 45 },
+
+        { name: 'Murugan', age: 65 },
+        { name: 'John', age: 65 },
+
+        { name: 'Frank', age: 25 },
+        { name: 'Erik', age: 26 },
+        { name: 'Sue', age: 34 }
+    ]
+    from(people)
+        .pipe(
+            groupBy(person => person.age), //separate into observable based on condition
+            mergeMap(group => group.pipe(toArray()))
+        )
+        .subscribe(val => console.log(val))
+}
+main()
+
+Use cases:
+1.Categorizing events -- group logs by info,warn
+2.Reactive data pivoting - group form inputs by field type
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									partition 
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+It is static function that splits a source observable into two separate observable based on a predicate function.
+
+What it does?
+1.Evaulates each value from the source observable using a predicate function
+2.Returns a tuple of two observables
+	-The first emits values that passes the predicate
+      -  The second emits values that fail the predicate
+
+import { of, partition } from 'rxjs'
+function main() {
+
+    const source = of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    const [evenNumbers, oddNumbers] = partition(source, value => value % 2 === 0)
+    evenNumbers.subscribe(val => console.log('Even :', val))
+    oddNumbers.subscribe(val => console.log('Odd :', val))
+}
+main()
+
+Eg:
+you have data set like below:
+	Refer todos data set:
+import { from,  partition } from 'rxjs'
+import TODOS from './mock-data/todos'
+function main() {
+
+    const source = from(TODOS)
+    const [completedTodos, unCompletedTodos] = partition(source, todo => {
+       
+        return todo.completed === true
+    })
+    completedTodos.subscribe(val => {
+       console.log(val)
+    })
+    unCompletedTodos.subscribe(val => console.log(val))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										pairwise operator
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+It emits the previous and current values from a source observable as a tuple(array of two items)
+
+What it does?
+ ->Waits for at least two emissions
+ -.Emits an array [prev,curr] for each new value
+->Skips the first value (since there is no previous value yet
+
+import { interval, pairwise } from 'rxjs'
+
+function main() {
+    interval(1000).pipe(
+        pairwise()
+    ).subscribe(([pre, curr]) => {
+        console.log(`Previous Value ${pre} Current Value ${curr}`)
+    })
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
