@@ -1,0 +1,152 @@
+											Utility Operators
+************************************************************************************************************************************************************
+
+1.tap
+2.delay
+3.delayWhen
+4.timeout
+5.toArray
+5.timeInterval
+6.materialize
+7.subscribeOn
+8.observeOn
+
+************************************************************************************************************************************************************
+											tap
+***********************************************************************************************************************************************************
+It is used to perform side effects for each emission from a source observable- without altering the values themselfs
+
+import { filter, map, of, tap } from 'rxjs'
+
+function main() {
+    of(1, 2, 3, 4, 5).pipe(
+        tap(val => console.log('Before Map', val)),
+        map(val => val * 2),
+        tap(val => console.log('After Map', val)),
+        filter(val => val % 2 === 0),
+        tap(val => console.log('After filter', val)),
+
+
+    ).subscribe(val => { })
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										delay - setTimeout
+*******************************************************************************
+************************************************************************
+It emits values after certain delay , which is similar to setTimeout
+import { delay, filter, map, of, tap } from 'rxjs'
+
+function main() {
+    of(1, 2, 3, 4, 5).pipe(
+        delay(1000)
+    ).subscribe(val => {
+        console.log(val)
+     })
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+							   delayWhen
+
+delay which uses a fixed time, 
+delayWhen uses a custom logic
+import { delay, delayWhen, filter, from, fromEvent, interval, map, of, tap } from 'rxjs'
+
+//delay each click by random time
+function main() {
+    const clicks = fromEvent(document, 'click')
+    clicks.pipe(
+        delayWhen(() => {
+            return interval(Math.random() * 5000)
+        })
+    ).subscribe(e => console.log('Delayed clicks', e))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+								  timeout
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+due: A number of ms or Date by which the observable must emit.
+if observable does not emit in time, it throws TimeoutError
+
+You make api call if api does not return on time , timeout happens
+
+import { catchError, of, timeout } from 'rxjs'
+import { ajax } from 'rxjs/ajax'
+
+//delay each click by random time
+function main() {
+    ajax.getJSON('https://jsonplaceholder.typicode.com/todos').pipe(
+        timeout(100),
+        catchError(() => of('Request timed out'))
+    ).subscribe(val => console.log(val))
+}
+main()
+*****************************************************************************************************************************************************
+											toArray
+*******************************************************************************************************************************************************
+
+It collects all values from source observable into array
+
+import { interval, take, toArray } from 'rxjs'
+
+//delay each click by random time
+function main() {
+    interval(100).pipe(
+        take(4),
+        toArray()
+    ).subscribe(value=>console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										materialize
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+It transforms the notifications (next,complete,error) from source observable into Notification Objects.
+
+import { interval, materialize, take, toArray } from 'rxjs'
+
+//delay each click by random time
+function main() {
+    interval(5000).pipe(
+       materialize()
+    ).subscribe(value=>console.log(value))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									observOn,subscribeOn
+										(Scheduler)
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+RxJS Schedulers are a powerful mechanism that control when and where tasks are executed in reactive streams. 
+They define the execution context for Observables, affecting timing, concurrency, and performance.
+
+🧠 What Is a Scheduler?
+A Scheduler in RxJS is:
+- A data structure for queuing tasks
+- An execution context (e.g., sync, async, microtask)
+- A virtual clock that defines time for scheduling operations
+
+Schedulers determine when subscriptions start and when notifications are delivered
+
+Types of scheduler:
+
+1.null  
+2.queueScheduler
+3.asapScheduler
+4.asyncSheduler
+5.animationFrameworkScheduler
+
+eg:
+asyncSchduler - observOn
+
+import { asyncScheduler, observeOn, of } from 'rxjs'
+
+//delay each click by random time
+function main() {
+    console.log('before subscription')
+    of(1, 2, 3, 5).pipe(
+        observeOn(asyncScheduler)
+    ).subscribe(val => console.log(val))
+    console.log('after subscription')
+}
+main()
