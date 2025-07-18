@@ -1,0 +1,206 @@
+									 Multicasting Operators and Subjects
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+RxJS multicasting operators are powerful tools that allow multiple subscribers to share a single execution of an Observable—transforming it from cold (unicast) to hot (multicast).
+
+This is especially useful when dealing with expensive operations like HTTP requests or timers.
+Here’s a structured overview tailored to your systems-thinking approach:
+
+🔥 What Is Multicasting?
+- Cold Observable: Each subscriber triggers a new execution.
+- Hot Observable: Execution is shared; all subscribers receive the same emissions.
+- Multicasting: Technique to make a cold Observable hot using a Subject.
+
+Operators:
+1.multicast
+2.publish
+3.publishBehavior
+4.publishLast
+5.publishReplay
+6.share
+
+1.share
+shares subscription among multiple subscribers
+
+->converts a cold observable into a hot observable.
+->shares the subscription among all subscribers
+->Automatically connects when the first subscriber arrives
+->Automatically disconnects when the last subscriber unsubscribes
+
+import { timer, tap, mapTo, share } from 'rxjs'
+function main() {
+    const source = timer(1000).pipe(
+        tap(() => console.log('executing')),
+        mapTo('Result'),
+        share()
+    )
+    //
+    source.subscribe(val => console.log('Subscriber A', val))
+    source.subscribe(val => console.log('Subscriber B', val))
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										publish
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+->shares a single subscription among multiple observers
+->delays execution until .connect is called
+
+import { interval, publish, tap } from 'rxjs'
+function main() {
+
+    const source = interval(1000).pipe(
+        tap(() => console.log('value is emitting')),
+        publish()
+    )
+
+    //
+    const subA = source.subscribe(val => console.log('Subscriber A', val))
+    const subB = source.subscribe(val => console.log('Subscriber B', val))
+
+    source.connect()
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+											Subjects
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+What is Subject?
+   It is special type of Observable, that allows values to be Multicasted to many observers.
+  While Plain Observables are unicast (each subscribed Observer owns an independent execution of the Observable
+  Subjects are like EventEmitters , they maintain registry of many listeners
+ 
+ Observable: Emits values to subscribers
+ Observer : Receives values via next,error,complete
+ Subject : Coimbines both , can emit values and be subscribed to
+
+It is like a microphone
+
+Types of Subjects
+ Type                                                             Behaviour                                                           Late Subcribers Receive
+
+Subject                                               Emits value; only after subscription                              No
+
+BehaviourSubject                             Requires inital value,emits latest value 
+							   immediately                                                                     Yes
+
+ReplaySubject                                   Buffers a set number of values and replays
+							   them to new subscribers                                                Yes
+
+ AsyncSubject                                   Emits only the last value upon completion                     Yes - after complete        
+
+
+  Subject:
+import { Subject } from 'rxjs'
+function main() {
+
+    const subject = new Subject()
+
+    subject.subscribe(val => console.log('Subscriber A', val))
+    subject.subscribe(val => console.log('Subscriber B', val))
+
+    //emit value
+    subject.next(1)
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+											Cold to Hot
+
+Observable which publishes data which is broadcasted to many subscribers via subject
+
+import { from, Subject } from 'rxjs'
+function main() {
+
+    const subject = new Subject()
+    subject.subscribe(val => console.log('Subscriber A', val))
+    subject.subscribe(val => console.log('Subscriber B', val))
+
+    const observable = from([1, 2, 3, 5, 6, 7])
+    observable.subscribe(subject)
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									Behaviour Subject
+**********************************************************************************************************************************************************
+->Requires initial value
+->Emits the latest value to new subscribers instantly
+->Acts as both an Observable and an Observer
+
+
+import { BehaviorSubject } from 'rxjs'
+
+function main() {
+    const subject = new BehaviorSubject(20) //inital value:0
+    subject.subscribe(val => console.log('A', val))
+    subject.next(1)
+    subject.subscribe(val => console.log('B', val))
+    subject.next(2)
+    subject.next(3)
+    subject.next(4)
+    subject.next(5)
+
+}
+main()
+
+Observable with Subject
+import { BehaviorSubject,from } from 'rxjs'
+
+function main() {
+    const subject = new BehaviorSubject(20) //inital value:0
+    subject.subscribe(val => console.log('A', val))
+    subject.subscribe(val => console.log('B', val))
+
+    const observable = from([1, 2, 3, 5, 6, 7])
+    observable.subscribe(subject)
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										ReplaySubject
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+Stores a buffer of past values (You can define how many values you can buffer)
+Replays those values to any new Subscribers immediately
+Continues to emit future values like a regular Subject
+dont require inital value unlike BehaviorSubject
+
+import { from, ReplaySubject } from 'rxjs'
+
+function main() {
+
+    const subject = new ReplaySubject(2) //buffer size-2: 2 values can stored
+    subject.next(1)
+    subject.next(2)
+    subject.next(3)
+    subject.next(4)
+    subject.subscribe(val => console.log("A", val))
+    subject.subscribe(val => console.log("B", val))
+
+    const observable = from([100,200,300,400,500,600])
+    observable.subscribe(subject)
+
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									AsyncSubject
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+It emits only last value it receives and only when it completes
+All subscribers early or late -receive the same final value
+if not completed , it emits nothing
+
+import { AsyncSubject } from 'rxjs'
+
+function main() {
+    const subject = new AsyncSubject()
+    subject.subscribe(val => console.log('A', val))
+    subject.next(1)
+    subject.subscribe(val => console.log('B', val))
+    subject.next(5)
+    subject.complete()
+
+}
+main()
+
