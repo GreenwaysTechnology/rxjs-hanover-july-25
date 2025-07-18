@@ -1,0 +1,75 @@
+									Mathematical and Aggregate operators
+************************************************************************************************************************************************************* 
+
+count
+max
+min
+reduce
+***********************************************************************************************************************************************************
+									count
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+   count all values from the source observable
+  count values based on predicate
+import { count, of } from 'rxjs'
+import { count, of } from 'rxjs'
+
+function main() {
+    of(1, 2, 3, 4).pipe(
+        count()
+    ).subscribe(value => console.log(`Total Items ${value}`))
+
+    of(1, 2, 3, 4).pipe(
+        count(val => val % 2 === 0)
+    ).subscribe(value => console.log(`Total Items ${value}`))
+}
+main()
+........................................................................................................................................................................................................................................
+								  max
+..................................................................................................................................................................................................................................
+that emits the maximum value from a stream once the source observable completes.
+Emits the largest value based on natural order or custom logic
+
+import { of, max } from 'rxjs'
+
+function main() {
+    of(1, 2, 3, 4, 1000).pipe(
+        max()
+    ).subscribe(value => console.log(value))
+
+
+}
+main()
+*************************************************************************************************************************************************
+									 min
+********************************************************************************************************************************
+That emits the minimum  value from a stream once the source observable completes.
+Emits the largest value based on natural order or custom logic
+
+import { min, of,  } from 'rxjs'
+
+function main() {
+    of(1, 2, 3, 4, 1000).pipe(
+        min()
+    ).subscribe(value => console.log(value))
+
+
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										reduce
+****************************************************************************************************************************************************
+
+It applies accumulator function over the values emitted by a source observable. 
+It emits a single final result when source completes
+
+Sum of N Numbers:
+..................................
+import { of, reduce } from 'rxjs'
+
+function main() {
+    of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).pipe(
+        reduce((acc, val) => acc + val, 0)
+    ).subscribe(value => console.log(value))
+}
+main()
