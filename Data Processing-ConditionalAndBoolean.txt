@@ -1,0 +1,111 @@
+									Conditional and Boolean Operators
+************************************************************************************************************************************************************
+Conditional and Boolean Operators that help you make decisions within observable streams.
+
+Operators:
+1.defaultIfEmpty
+2.every
+3.find
+4.findIndex
+5.isEmpty
+
+defaultIfEmpty:
+
+That emits a default value if the source observable completes without emitting any value.
+
+import { defaultIfEmpty, filter, from } from "rxjs"
+
+function main() {
+    from([1, 2, 3, 4, 5, 6, 7]).pipe(
+        filter(x => x > 10),
+        defaultIfEmpty("No Matching Items")
+    ).subscribe(val => console.log(val))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									every
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+It is boolean conditional operator that checks whether all values emitted by an observable satisfy a given predicate.
+
+The predicate function that tests each emitted value, emits true if all values passes the test before completion; otherwise emits false and completes early
+
+All values are event values?
+
+import { every, of } from "rxjs"
+
+function main() {
+    of(2, 4, 6, 8, 10).pipe(
+        every(val => val % 2 === 0)
+    ).subscribe(val => console.log(val ? "Every values are even" :"Some of the values are not even"))
+
+    of(2, 4, 3, 1, 10).pipe(
+        every(val => val % 2 === 0)
+    ).subscribe(val => console.log(val ? "Every values are even" :"Some of the values are not even"))
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+									find
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+It is conditional operator that emits the first value from a source observable that matches a given predicate - and then completes.
+
+->predicate function that tests each emitted value.
+->Emits the first matching value, or undefined if no match is found
+
+
+Find first Even Number:
+.......................................
+import { of, find } from "rxjs"
+
+function main() {
+    of(1, 2, 5, 3, 7, 10).pipe(
+        find(val => val % 2 === 0)
+    ).subscribe({
+        next: (val) => console.log(val),
+        error: (err) => console.log(err),
+        complete: () => console.log('done')
+    })
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+										findIndex
+
+It is conditional operator, that emits the index of the first value in the source observable.
+import { findIndex, of,  } from "rxjs"
+
+function main() {
+    of(1, 2, 5, 3, 7, 10).pipe(
+        findIndex(val => val % 2 === 0)
+    ).subscribe({
+        next: (val) => console.log(val),
+        error: (err) => console.log(err),
+        complete: () => console.log('done')
+    })
+}
+main()
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+							    isEmty
+
+that checks whether a source Observable emits any value
+
+if it emits true, the observable completes without emitting anything
+false as soon as the observable emits any value
+
+import { isEmpty, of, } from "rxjs"
+
+function main() {
+    of(1, 2, 5, 3, 7, 10).pipe(
+        isEmpty()
+    ).subscribe({
+        next: (val) => console.log(val),
+        error: (err) => console.log(err),
+        complete: () => console.log('done')
+    })
+    of().pipe(
+        isEmpty()
+    ).subscribe({
+        next: (val) => console.log(val),
+        error: (err) => console.log(err),
+        complete: () => console.log('done')
+    })
+}
+main()
